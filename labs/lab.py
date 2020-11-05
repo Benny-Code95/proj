@@ -1,4 +1,3 @@
-import time
 import os
 
 
@@ -20,9 +19,6 @@ def tst1():
 
 
 if __name__ == '__main__':
-    start = time.time()
     for i in range(1):
         tst()
-    end = time.time()
-    print(end - start)
     pass
