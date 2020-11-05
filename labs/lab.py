@@ -25,6 +25,4 @@ if __name__ == '__main__':
         tst()
     end = time.time()
     print(end - start)
-    a = 1
-    print(a)
     pass
