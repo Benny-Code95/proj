@@ -19,8 +19,8 @@ class AmCal:
 
     # 计算AM1.5投射辐射强度和透射率（直照辐射强度默认值为900.1W/m^2）
     def cal_dni_900(self, nt_df, dni=900.1, wave_start=0.0,
-                    wave_end=float('inf')):
-        trans = pd.DataFrame(nt_df, columns=['wave', 'tran']) if type(
+                    wave_end=float('inf'), attr='tran'):
+        trans = pd.DataFrame(nt_df, columns=['wave', attr]) if type(
             nt_df) == list else nt_df
         sum_tr_dni, sum_dni = 0.0, 0.0
         pos_wave = 0
@@ -58,8 +58,8 @@ class AmCal:
 
     # 梯形法计算AM1.5投射辐射强度和透射率
     def cal_dni_900_via_trap(self, nt_df, dni=900.1, wave_start=0.0,
-                             wave_end=float('inf')):
-        nt_df = pd.DataFrame(nt_df, columns=['wave', 'tran']) if type(
+                             wave_end=float('inf'), attr='tran'):
+        nt_df = pd.DataFrame(nt_df, columns=['wave', attr]) if type(
             nt_df) == list else nt_df
         sum_tr_dni, sum_dni = 0.0, 0.0
         dni_ratio = dni / 900.1
@@ -92,22 +92,22 @@ class AmCal:
 
     # 通过截止膜文件获取AM1.5透射率
     def cal_am_tr_via_path(self, if_path, wave_start=0.0,
-                           wave_end=float('inf')):
-        nt_df = pd.read_excel(if_path)
+                           wave_end=float('inf'), attr='tran', sheet='Sheet1'):
+        nt_df = pd.read_excel(if_path, sheet_name=sheet, usecols=[0, 1, 2])
         return self.cal_dni_900_via_trap(nt_df, wave_start=wave_start,
-                                         wave_end=wave_end)
+                                         wave_end=wave_end, attr=attr)
 
 
 if __name__ == '__main__':
     AM15_path = 'F:\\研究生\\计算及工作整理\\截止膜\\太阳光谱数据\\太阳光谱.xlsx'
-    IF_path = 'F:\\研究生\\计算及工作整理\\截止膜\\计算\\AZO-Ag.xlsx'
+    IF_path = 'F:\研究生\计算及工作整理\截止膜\TFC设计及膜参数\\AZO-Ag.xlsx'
+    glass_path = 'F:\研究生\计算及工作整理\截止膜\TFC设计及膜参数\材料参数\\SiO2.xlsx'
     root = AmCal()
     # DNI = 900.1
     # cut_point = 1.8
     # tr_low, tr_high = 0.8, 1
     # tr_list = [[cut_point, tr_low],
     #            [cut_point, tr_high]]
-    # ttt1 = root.cal_dni_900(tr_list, wave_start=0.0, wave_end=cut_point)
-    ttt1 = root.cal_am_tr_via_path(IF_path)
-    # ttt = root.cal_dni_900_via_trap(tr_list, wave_start=0.0, wave_end=cut_point)
+    ttt = root.cal_am_tr_via_path(IF_path, sheet='glass')
+    ttt1 = root.cal_am_tr_via_path(glass_path)
     # print(ttt)
