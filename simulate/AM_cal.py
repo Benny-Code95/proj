@@ -109,6 +109,6 @@ if __name__ == '__main__':
     # tr_low, tr_high = 0.8, 1
     # tr_list = [[cut_point, tr_low],
     #            [cut_point, tr_high]]
-    ttt = root.cal_am_tr_via_path(IF_path, sheet='glass')
-    ttt1 = root.cal_am_tr_via_path(glass_path, attr='ref')
+    ttt = root.cal_am_tr_via_path(IF_path, sheet='glass', attr='ref')
+    ttt1 = root.cal_am_tr_via_path(glass_path, attr='tran')
     # print(ttt)

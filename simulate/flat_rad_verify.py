@@ -412,55 +412,78 @@ class CalFlatRadiation:
         return seg, eml, qrh, qro, qrt
 
 
-def tst_cal_tg():
+def validateCOMSOL():
     ins = CalFlatRadiation()
-    # ttt = ins.qr_semi_transparent(1000, 712.53, 0.9, 0.53237, 0.34015, 1.4137,
-    #                               0.9)
-    # print(ttt)
+    p_glass = {
+        'rfs': [[0, 3.6, 7.5, 10.0], [0.131, 0.059, 0.473, 0.133]],
+        'trs': [[0, 3.6, 7.5, 10.0], [0.814, 0.027, 0, 0]]
+    }
+    # p_coating = {
+    #     'rfs': [[0, 3.6, 7.5, 10.0], [0.131, 0.059, 0.473, 0.133]],
+    #     'trs': [[0, 3.6, 7.5, 10.0], [0.814, 0.027, 0, 0]]
+    # }
+    p_coating = {
+        'trs': [[0, 2.5], [0.99, 0]],
+        'rfs': [[0, 2.5], [0, 1]]
+    }
+    filter_path = 'F:\研究生\计算及工作整理\截止膜\模型验证\\截止膜验证.xlsx'
+    coatings = {'glass': [8450, 88400], 'IF': [9750, 91650],
+                'TCO': [118300, 60450], 'CIF': [9750, 183300],
+                'RIF': [9100, 96200]}
+    validates = {'glass': None, 'IF': None, 'TCO': None, 'CIF': None,
+                 'RIF': None}
+    for c, q in coatings.items():
+        if c == 'glass':
+            qr = ins.balance_energy(1373.0, 1.0, p_glass, p_glass, 4.0, 0.005,
+                                    q_source=q[0] / 2)
+        elif c == 'IF':
+            qr = ins.balance_energy(1373.0, 1.0, p_coating, p_glass, 4.0, 0.005,
+                                    q_source=q[0] / 2)
+        else:
+            p_coating = pars_spectrum_via_excel(filter_path, c + '-coating')
+            p_glass = pars_spectrum_via_excel(filter_path, c + '-solar')
+            qr = ins.balance_energy(1373.0, 1.0, p_coating, p_glass, 4.0, 0.005,
+                                    q_source=q[0] / 2)
+        validates[c] = qr
+        print(qr)
+    for c, v in validates.items():
+        tmp_avg = (v[2] + v[3]) / 2 - 273.15
+        tmp_max = v[2] - 273.15
+        htLoss = v[0] + sum(coatings[c])
+        perLoss = htLoss / (validates['glass'][0] + sum(coatings['glass']))
+        print(c, tmp_avg, tmp_max, perLoss)
 
-    # p_glass = {
-    #     'rfs': [[0, 3.6, 7.5, 10.0], [0.131, 0.059, 0.473, 0.133]],
-    #     'trs': [[0, 3.6, 7.5, 10.0], [0.814, 0.027, 0, 0]]
-    # }
-    # p_coating = {
-    #     'rfs': [[0, 3.6, 7.5, 10.0], [0.131, 0.059, 0.473, 0.133]],
-    #     'trs': [[0, 3.6, 7.5, 10.0], [0.814, 0.027, 0, 0]]
-    # }
-    # p_coating = {
-    #     'trs': [[0, 2.5], [0.99, 0]],
-    #     'rfs': [[0, 2.5], [0, 1]]
-    # }
-    # filter_path = 'F:\\研究生\\计算及工作整理\\模型验证\\截止膜验证.xlsx'
-    # p_glass = pars_spectrum_via_excel(filter_path, 'RIF-solar')
-    # p_coating = pars_spectrum_via_excel(filter_path, 'RIF-coating')
-    # filter_path = 'F:\\研究生\\计算及工作整理\\截止膜\\计算\\AZO-Ag.xlsx'
-    filter_path = 'F:\\研究生\\计算及工作整理\\截止膜\\计算\\AZO-Ag.xlsx'
-    pars = pars_spectrum_via_excel(filter_path)
-    p_class = {'rfs': [[0, 1.5, 3.5, 10.0], [0.07, 0.03, 0.07, 0.07]],
-               'trs': [[0, 1.5, 3.5, 10.0], [0.825, 0.26, 0, 0]]}
-    # ttt = ins.balance_energy(1373, 1, pars, p_class, 4, 0.005, area1=0.35476,
-    #                          area2=0.05657, q_source=0)
-    # print('mean:{0}\tmax:{1}'.format((ttt[2] + ttt[3]) / 2 - 273.15,
-    #                                  ttt[2] - 273.15))
-    th, tgu, tgd = 773.15, 489.0, 479.2
-    print('盖板下发射率：{:.4f}'.format(ins.cal_avg_em(tgd, p_class)))
-    tt = ins.cal_seg_and_eml_all_spectrum(th, tgu, 1.0, p_class,
-                                          area1=1, area2=1)
+
+def cal_wave_seg():
+    ins = CalFlatRadiation()
+    sub_path = 'F:\研究生\计算及工作整理\截止膜\TFC设计及膜参数\材料参数\\SiO2.xlsx'
+    p_glass = pars_spectrum_via_excel(sub_path)
+    th, tgu, tgd = 1773.15, 1589.0, 1379.2
+    tt = ins.cal_seg_and_eml_all_spectrum(th, tgu, 1.0, p_glass)
+    print('无膜--盖板下发射率：{:.4f}'.format(ins.cal_avg_em(tgd, p_glass)))
     print('无膜--截止点：{0:.4f} 盖板上发射率：{1:.4f}'.format(tt[0], tt[1]))
-
-    tt = ins.cal_seg_and_eml_all_spectrum(th, tgu, 1.0, pars,
-                                          area1=0.35476, area2=0.05657)
-    print('有膜--截止点：{0:.4f} 盖板上发射率：{1:.4f}'.format(tt[0], tt[1]))
     print(tt)
 
-
-def tst_cal_wave_seg():
-    ins = CalFlatRadiation()
-    t = ins.get_ebs_via_band(200.0, 300.0, wave_end=10.0)
-    print(t)
+    filter_path = 'F:\研究生\计算及工作整理\截止膜\TFC设计及膜参数\\AZO-Ag.xlsx'
+    p_filter_inner = pars_spectrum_via_excel(filter_path, filter_type='coating')
+    p_filter_out = pars_spectrum_via_excel(filter_path, filter_type='glass')
+    tt = ins.cal_seg_and_eml_all_spectrum(th, tgu, 1.0, p_filter_inner)
+    print('有膜--盖板下发射率：{:.4f}'.format(ins.cal_avg_em(tgd, p_filter_out)))
+    print('有膜--截止点：{0:.4f} 盖板上发射率：{1:.4f}'.format(tt[0], tt[1]))
+    print(tt)
     pass
 
 
+def tst():
+    ins = CalFlatRadiation()
+    p_glass = {
+        'rfs': [[0, 3.6, 7.5, 10.0], [0.131, 0.059, 0.473, 0.133]],
+        'trs': [[0, 3.6, 7.5, 10.0], [0.814, 0.027, 0, 0]]
+    }
+    print(ins.balance_energy(1373, 1.0, p_glass, p_glass, 4.0, 0.005))
+    print(ins.cal_seg_and_eml_all_spectrum(1373, 1085, 1.0, p_glass))
+
+
 if __name__ == '__main__':
-    tst_cal_tg()
-    # tst_cal_wave_seg()
+    # validateCOMSOL()
+    tst()
