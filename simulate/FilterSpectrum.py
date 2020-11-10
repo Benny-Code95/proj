@@ -1,6 +1,7 @@
 from CalTools.GetValues import get_line_value_via_lists
 import numpy as np
 import pandas as pd
+import re
 
 transmission = '''
 0.28843	0.8351
@@ -743,6 +744,17 @@ def pars_spectrum_via_excel(path, filter_type='Sheet1'):
         [r for r in data['ref'] if not np.isnan(r)]
     ]
     return {'trs': trs, 'rfs': rfs, 'scatter': True}
+
+
+def parseMaterialTXT(txtPath):
+    with open(txtPath, 'r', encoding='utf8') as f:
+        data = f.read()
+    print(data)
+    cmp = re.compile(
+        'W=\".(\d+\.?\d+)\" n=\".(\d*\.\d*)\" k=\".(\d*\.?\d*(E-\d+)?)')
+    nks = re.findall(cmp, data)
+    for nk in nks:
+        print('{0}\t{1}\t{2}'.format(float(nk[0]), float(nk[1]), float(nk[2])))
 
 
 if __name__ == '__main__':

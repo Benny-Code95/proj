@@ -1,24 +1,18 @@
-import os
+import re
 
 
-def tst():
-    root_path = 1
-    print(root_path)
-    for r, d, f in os.walk('G:\\'):
-        print(r, d, f)
-
-    pass
-
-
-def tst1():
-    num_max = 3 * 10 ** 3
-    count = len(
-        [num for num in range(num_max + 1) if str(num) == str(num)[::-1]])
-    print(count)
-    # print('12345'[:-len('1234'):-1])
+def parseMaterialTXT(txtPath):
+    with open(txtPath, 'r', encoding='utf8') as f:
+        data = f.read()
+    print(data)
+    cmp = re.compile(
+        'W=\".(\d+\.?\d+)\" n=\".(\d*\.\d*)\" k=\".(\d*\.?\d*(E-\d+)?)')
+    nks = re.findall(cmp, data)
+    for nk in nks:
+        print('{0}\t{1}\t{2}'.format(float(nk[0]), float(nk[1]), float(nk[2])))
 
 
 if __name__ == '__main__':
-    for i in range(1):
-        tst()
+    path = 'F:\\研究生\\计算及工作整理\\截止膜\\TFC设计\\sio2.txt'
+    parseMaterialTXT(path)
     pass
