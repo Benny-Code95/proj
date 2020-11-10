@@ -87,9 +87,8 @@ class AmCal:
         sum_tr_dni *= dni / 900.1
         sum_dni *= dni / 900.1
         tr_dni = sum_tr_dni / sum_dni
-        print('透射率为：{0}\n透射强度为：{1} W/m^2（波段内直照辐射强度为{2}W/m^2）'.format(tr_dni,
-                                                                     sum_tr_dni,
-                                                                     sum_dni))
+        formatStr = '{0}为：{1}\n{0}强度为：{2} W/m^2（波段内DNI：{3}W/m^2）'
+        print(formatStr.format(attr, tr_dni, sum_tr_dni, sum_dni))
         return tr_dni, sum_dni, sum_tr_dni
 
     # 通过截止膜文件获取AM1.5透射率
