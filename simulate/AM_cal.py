@@ -8,13 +8,13 @@ class AmCal:
     # 根据透射率曲线取得对应波长的透射率
     # nt_list = [[1, 1] ,[1.01, 0.1]] # [波长um 透射率]
     @staticmethod
-    def get_tr_via_wave(n, trs, pos=0):
+    def get_tr_via_wave(n, trs, pos=0, attr='tran'):
         if pos >= len(trs['wave']):
             pos = len(trs['wave']) - 2
         while n > trs['wave'][pos + 1] and pos < len(trs['wave']) - 2:
             pos += 1
         tr = get_line_value(n, trs['wave'][pos], trs['wave'][pos + 1],
-                            trs['tran'][pos], trs['tran'][pos + 1])
+                            trs[attr][pos], trs[attr][pos + 1])
         return tr, pos
 
     # 计算AM1.5投射辐射强度和透射率（直照辐射强度默认值为900.1W/m^2）
@@ -29,7 +29,8 @@ class AmCal:
 
             # 获取透射率
             wave_cur = AM15_waves[i]
-            tr, pos_wave = self.get_tr_via_wave(wave_cur, trans, pos=pos_wave)
+            tr, pos_wave = self.get_tr_via_wave(wave_cur, trans, pos=pos_wave,
+                                                attr=attr)
             if wave_cur < wave_start or wave_cur > wave_end:
                 continue
 
@@ -69,7 +70,8 @@ class AmCal:
 
             # 获取透射率
             wave_cur = AM15_waves[i]
-            tr, pos_wave = self.get_tr_via_wave(wave_cur, nt_df, pos=pos_wave)
+            tr, pos_wave = self.get_tr_via_wave(wave_cur, nt_df, pos=pos_wave,
+                                                attr=attr)
             trans.append(tr)
             if wave_cur < wave_start or wave_cur > wave_end or i == 0:
                 continue
@@ -109,5 +111,5 @@ if __name__ == '__main__':
     # tr_list = [[cut_point, tr_low],
     #            [cut_point, tr_high]]
     ttt = root.cal_am_tr_via_path(IF_path, sheet='glass')
-    ttt1 = root.cal_am_tr_via_path(glass_path)
+    ttt1 = root.cal_am_tr_via_path(glass_path, attr='ref')
     # print(ttt)
