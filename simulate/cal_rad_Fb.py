@@ -233,6 +233,6 @@ def cal_fb_via_band(Tk, w1, w2):
 
 
 if __name__ == '__main__':
-    T = 1373
-    waves = 1.92568
+    T = 1123
+    waves = 3.0658
     print(cal_fb(T, waves))

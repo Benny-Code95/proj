@@ -243,7 +243,7 @@ class CalFlatRadiation:
         tg_down = (tmp_h + self.Ta) / 2
         tg_up = tg_down
         err_max = 0.0001
-        qrh, qrg = 0.0, 0.0
+        qrh, qrg, qrt = 0.0, 0.0, 0.0
         tg_down_min, tg_down_max = self.Ta, tmp_h
         err, count = 1.0, 1
         while abs(err) > err_max and count <= 300:
@@ -252,7 +252,7 @@ class CalFlatRadiation:
             while abs(err1) > err_max and count1 <= 30:
                 qrg = self.cal_qg(tg_down, pars_down, area2)
                 qcd = self.cal_qcd_via_tgs(tg_up, tg_down, cond, thc, area2)
-                err1 = (qrg - qcd) / qrg
+                err1 = (qrg - qcd - q_source) / qrg
                 if err1 > err_max:
                     tg_up_min, tg_up = tg_up, (tg_up + tg_up_max) / 2
                 elif err1 < -err_max:
@@ -267,7 +267,8 @@ class CalFlatRadiation:
             elif err < -err_max:
                 tg_down_max, tg_down = tg_down, (tg_down + tg_down_min) / 2
             count += 1
-        return qrh, qrg, tg_up, tg_down
+        # 返回总辐射热通量、透射辐射、盖板上下温度
+        return qrh, qrt, tg_up, tg_down
 
     # 透明表面计算（fit COMSOL）（单位：W）
     def qr_transparent(self, ebh, em, area1=1.0, area2=1.0):
@@ -418,10 +419,6 @@ def validateCOMSOL():
         'rfs': [[0, 3.6, 7.5, 10.0], [0.131, 0.059, 0.473, 0.133]],
         'trs': [[0, 3.6, 7.5, 10.0], [0.814, 0.027, 0, 0]]
     }
-    # p_coating = {
-    #     'rfs': [[0, 3.6, 7.5, 10.0], [0.131, 0.059, 0.473, 0.133]],
-    #     'trs': [[0, 3.6, 7.5, 10.0], [0.814, 0.027, 0, 0]]
-    # }
     p_coating = {
         'trs': [[0, 2.5], [0.99, 0]],
         'rfs': [[0, 2.5], [0, 1]]
@@ -456,9 +453,10 @@ def validateCOMSOL():
 
 def cal_wave_seg():
     ins = CalFlatRadiation()
+    ins.__setattr__('Ta', 293.15)
     sub_path = 'F:\研究生\计算及工作整理\截止膜\TFC设计及膜参数\材料参数\\SiO2.xlsx'
     p_glass = pars_spectrum_via_excel(sub_path)
-    th, tgu, tgd = 1773.15, 1589.0, 1379.2
+    th, tgu, tgd = 1073.15, 995.0, 970.2
     tt = ins.cal_seg_and_eml_all_spectrum(th, tgu, 1.0, p_glass)
     print('无膜--盖板下发射率：{:.4f}'.format(ins.cal_avg_em(tgd, p_glass)))
     print('无膜--截止点：{0:.4f} 盖板上发射率：{1:.4f}'.format(tt[0], tt[1]))
@@ -480,10 +478,12 @@ def tst():
         'rfs': [[0, 3.6, 7.5, 10.0], [0.131, 0.059, 0.473, 0.133]],
         'trs': [[0, 3.6, 7.5, 10.0], [0.814, 0.027, 0, 0]]
     }
+    print(ins.cal_avg_em(1065, p_glass))
     print(ins.balance_energy(1373, 1.0, p_glass, p_glass, 4.0, 0.005))
-    print(ins.cal_seg_and_eml_all_spectrum(1373, 1085, 1.0, p_glass))
+    print(ins.cal_seg_and_eml_all_spectrum(1373, 1123, 1.0, p_glass))
 
 
 if __name__ == '__main__':
     # validateCOMSOL()
-    tst()
+    cal_wave_seg()
+    # tst()
