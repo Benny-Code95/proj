@@ -8,10 +8,10 @@ def CeShiFunc():
 
 
 class CeShiCls(object):
-
+    
     def __init__(self):
         self.a = 0
-
+    
     def cs(self):
         pass
 
