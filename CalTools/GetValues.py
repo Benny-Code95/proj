@@ -32,16 +32,19 @@ def get_pos_via_bin_search(arr, x, left=None, right=None):
 
 # 根据元素一一对应的双列表（变量列表有序）求出对应的线性插值和元素对应位置
 # 0：列表左侧；i(1-n)：列表i-i+1（左闭右开）；n+1：列表右侧
-def get_line_value_via_lists(ind_var, var_list, value_list, pos=0, get_pos=False):
+def get_line_value_via_lists(ind_var, var_list, value_list, pos=0,
+                             get_pos=False):
     if len(var_list) != len(value_list):
         print('自变量和因变量列表长度不一致！')
         return
-    ind_var, var_tuple, value_tuple = float(ind_var), tuple(var_list), tuple(value_list)
+    ind_var, var_tuple, value_tuple = float(ind_var), tuple(var_list), tuple(
+        value_list)
     if len(var_list) == 1:
         return value_tuple[0]
     while ind_var > var_tuple[pos + 1] and pos < len(var_tuple) - 2:
         pos += 1
-    value = get_line_value(ind_var, var_tuple[pos], var_tuple[pos + 1], value_tuple[pos], value_tuple[pos + 1])
+    value = get_line_value(ind_var, var_tuple[pos], var_tuple[pos + 1],
+                           value_tuple[pos], value_tuple[pos + 1])
     if get_pos:
         return value, pos
     else:
@@ -49,10 +52,7 @@ def get_line_value_via_lists(ind_var, var_list, value_list, pos=0, get_pos=False
 
 
 def tst_cal():
-    eff = 0.5336
-    x1, x2 = -0.0846, 0.602
-    y1, y2 = 0.0, 1.0
-    print('{:.4}'.format(get_line_value(eff, x1, x2, y1, y2)))
+    pass
 
 
 if __name__ == '__main__':

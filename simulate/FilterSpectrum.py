@@ -757,9 +757,34 @@ def parseMaterialTXT(txtPath):
         print('{0}\t{1}\t{2}'.format(float(nk[0]), float(nk[1]), float(nk[2])))
 
 
+def get_wave_attr_via_line_values(new_waves, waves, attrs):
+    pos = 0
+    for nk in new_waves:
+        nv, pos = get_line_value_via_lists(nk, waves, attrs, pos=pos,
+                                           get_pos=True)
+        print(nk, '\t', nv)
+
+
+def nk_spectrum_via_excel(path, sheet_wave='w-nk', sheet_data='w-n',
+                          attr='n'):
+    w_data = pd.read_excel(path, sheet_name=sheet_wave)
+    new_waves = list(w_data['wave'])
+    nk_data = pd.read_excel(path, sheet_name=sheet_data)
+    waves, attrs = list(nk_data['wave']), list(nk_data[attr])
+    get_wave_attr_via_line_values(new_waves, waves, attrs)
+
+
+def ceShi():
+    path = 'F:\研究生\计算及工作整理\截止膜\TFC设计及膜参数\材料参数\\silica glass.xlsx'
+    sheet_data = 'w-n'
+    attr = 'n'
+    nk_spectrum_via_excel(path, sheet_data=sheet_data, attr=attr)
+    pass
+
+
 if __name__ == '__main__':
     # print(get_pars_via_str(transmission, reflectance))
     # verify_attr_of_filter()
     # pars_spectrum_via_excel(filter_path, 'TCO-solar')
-    print(pars_spectrum_via_excel('F:\\研究生\\计算及工作整理\\截止膜\\计算\\AZO-Ag.xlsx'))
+    ceShi()
     pass
