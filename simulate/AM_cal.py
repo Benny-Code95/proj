@@ -86,8 +86,6 @@ class AmCal:
         sum_tr_dni *= dni / 900.1
         sum_dni *= dni / 900.1
         tr_dni = sum_tr_dni / sum_dni
-        formatStr = '{0}为：{1}\n{0}强度为：{2} W/m^2（波段内DNI：{3}W/m^2）'
-        print(formatStr.format(attr, tr_dni, sum_tr_dni, sum_dni))
         return tr_dni, sum_dni, sum_tr_dni
 
     # 通过截止膜文件获取AM1.5透射率
@@ -101,13 +99,12 @@ class AmCal:
 if __name__ == '__main__':
     AM15_path = 'F:\\研究生\\计算及工作整理\\截止膜\\太阳光谱数据\\太阳光谱.xlsx'
     IF_path = 'F:\研究生\计算及工作整理\截止膜\TFC设计及膜参数\\AZO-Ag.xlsx'
-    glass_path = 'F:\研究生\计算及工作整理\截止膜\TFC设计及膜参数\材料参数\\SiO2.xlsx'
+    glass_path = 'F:\研究生\计算及工作整理\截止膜\TFC设计及膜参数\\silica_glass.xlsx'
     root = AmCal()
-    # DNI = 900.1
-    # cut_point = 1.8
-    # tr_low, tr_high = 0.8, 1
-    # tr_list = [[cut_point, tr_low],
-    #            [cut_point, tr_high]]
-    ttt = root.cal_am_tr_via_path(IF_path, sheet='glass', attr='ref')
+    ttt = root.cal_am_tr_via_path(IF_path, sheet='no_sub', attr='tran',
+                                  wave_start=0)
+    formatStr = '{0}为：{1}\n{0}强度为：{3} W/m^2（波段内DNI：{2}W/m^2）'
+    print(formatStr.format('tran', *ttt))
     ttt1 = root.cal_am_tr_via_path(glass_path, attr='tran')
-    # print(ttt)
+    formatStr = '{0}为：{1}\n{0}强度为：{3} W/m^2（波段内DNI：{2}W/m^2）'
+    print(formatStr.format('tran', *ttt1))
