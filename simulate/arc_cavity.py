@@ -146,7 +146,7 @@ class ArcRadiation(CalFlatRadiation):
             count += 1
 
         if abs(err1) > 0.01:
-            print('截止点错误')
+            print('截止点错误，最后的截止点为{}'.format(seg))
             raise NotConvergent
 
         # 获取低波段发射率
@@ -165,7 +165,7 @@ class ArcRadiation(CalFlatRadiation):
             count += 1
 
         if abs(err2) > 0.01:
-            print('发射率错误')
+            print('发射率错误，最后的发射率为{}'.format(eml))
             raise NotConvergent
         return seg, eml, qrh, qro, qrt
 
@@ -173,21 +173,24 @@ class ArcRadiation(CalFlatRadiation):
 def tst():
     ins = ArcRadiation()
     ins.__setattr__('Ta', 293.15)
-    sub_path = 'F:\研究生\计算及工作整理\截止膜\TFC设计及膜参数\\silica_glass.xlsx'
-    p_glass = pars_spectrum_via_excel(sub_path)
-    th, trf, tgu, tgd = 873.15, 791.0, 683.0, 661.0
-    tt = ins.get_seg_and_eml(th, trf, tgu, 1.0, 0.1, p_glass)
-    print('无膜--盖板下发射率：{:.4f}'.format(ins.cal_avg_em(tgd, p_glass)))
-    print('无膜--截止点：{0:.4f} 盖板上发射率：{1:.4f}'.format(tt[0], tt[1]))
-    print(tt)
-
-    filter_path = 'F:\研究生\计算及工作整理\截止膜\TFC设计及膜参数\\AZO-Ag.xlsx'
-    p_filter_inner = pars_spectrum_via_excel(filter_path, filter_type='coating')
-    p_filter_out = pars_spectrum_via_excel(filter_path, filter_type='glass')
-    tt = ins.get_seg_and_eml(th, trf, tgu, 1.0, 0.1, p_filter_inner)
-    print('有膜--盖板下发射率：{:.4f}'.format(ins.cal_avg_em(tgd, p_filter_out)))
-    print('有膜--截止点：{0:.4f} 盖板上发射率：{1:.4f}'.format(tt[0], tt[1]))
-    print(tt)
+    th, trf, tgu, tgd = 973.15, 1010.0, 1164.0, 1104.0
+    coating = True
+    if not coating:
+        sub_path = 'F:\研究生\计算及工作整理\截止膜\TFC设计及膜参数\\silica_glass.xlsx'
+        p_glass = pars_spectrum_via_excel(sub_path)
+        tt = ins.get_seg_and_eml(th, trf, tgu, 1.0, 0.1, p_glass)
+        print('无膜--盖板下发射率：{:.4f}'.format(ins.cal_avg_em(tgd, p_glass)))
+        print('无膜--截止点：{0:.4f} 盖板上发射率：{1:.4f}'.format(tt[0], tt[1]))
+        print(tt)
+    else:
+        filter_path = 'F:\研究生\计算及工作整理\截止膜\TFC设计及膜参数\\AZO-Ag.xlsx'
+        p_filter_inner = pars_spectrum_via_excel(filter_path,
+                                                 filter_type='coating')
+        p_filter_out = pars_spectrum_via_excel(filter_path, filter_type='glass')
+        tt = ins.get_seg_and_eml(th, trf, tgu, 1.0, 0.1, p_filter_inner)
+        print('有膜--盖板下发射率：{:.4f}'.format(ins.cal_avg_em(tgd, p_filter_out)))
+        print('有膜--截止点：{0:.4f} 盖板上发射率：{1:.4f}'.format(tt[0], tt[1]))
+        print(tt)
     pass
 
 
